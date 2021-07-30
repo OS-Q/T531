@@ -1,51 +1,38 @@
 /**************0.96  4PIN IIC OLED FOR Arduino***********
 ***** 3----3  SCK   ,  4----4  SDA
 ********************************************************/
-#define OLED_COLUMN_NUMBER 128
-#define OLED_LINE_NUMBER 32
+#define OLED_COLUMN_NUMBER  128
+#define OLED_LINE_NUMBER    32
 #define OLED_PAGE_NUMBER OLED_LINE_NUMBER/8
 const unsigned char *point;
 
 const unsigned char OLED_init_cmd[25]=
 {
     0xAE,//关闭显示
-
-       0xD5,//设置时钟分频因子,震荡频率
-       0x80,  //[3:0],分频因子;[7:4],震荡频率
-
-       0xA8,//设置驱动路数
-       0X1F,//默认(1/32)
-
-       0xD3,//设置显示偏移
-       0X00,//默认为0
-
-       0x40,//设置显示开始行 [5:0],行数.
-
-       0x8D,//电荷泵设置
-       0x14,//bit2，开启/关闭
-       0x20,//设置内存地址模式
-       0x02,//[1:0],00，列地址模式;01，行地址模式;10,页地址模式;默认10;
-       0xA1,//段重定义设置,bit0:0,0->0;1,0->127;
-
-       0xC8,//设置COM扫描方向;bit3:0,普通模式;1,重定义模式 COM[N-1]->COM0;N:驱动路数
-
-       0xDA,//设置COM硬件引脚配置
-       0x02,//[5:4]配置
-
-       0x81,//对比度设置
-       0xEF,//1~255;默认0X7F (亮度设置,越大越亮)
-
-       0xD9,//设置预充电周期
-       0xf1,//[3:0],PHASE 1;[7:4],PHASE 2;
-
-       0xDB,//设置VCOMH 电压倍率
-       0x30,//[6:4] 000,0.65*vcc;001,0.77*vcc;011,0.83*vcc;
-
-       0xA4,//全局显示开启;bit0:1,开启;0,关闭;(白屏/黑屏)
-
-       0xA6,//设置显示方式;bit0:1,反相显示;0,正常显示
-
-       0xAF,//开启显示
+    0xD5,//设置时钟分频因子,震荡频率
+    0x80,  //[3:0],分频因子;[7:4],震荡频率
+    0xA8,//设置驱动路数
+    0X1F,//默认(1/32)
+    0xD3,//设置显示偏移
+    0X00,//默认为0
+    0x40,//设置显示开始行 [5:0],行数.
+    0x8D,//电荷泵设置
+    0x14,//bit2，开启/关闭
+    0x20,//设置内存地址模式
+    0x02,//[1:0],00，列地址模式;01，行地址模式;10,页地址模式;默认10;
+    0xA1,//段重定义设置,bit0:0,0->0;1,0->127;
+    0xC8,//设置COM扫描方向;bit3:0,普通模式;1,重定义模式 COM[N-1]->COM0;N:驱动路数
+    0xDA,//设置COM硬件引脚配置
+    0x02,//[5:4]配置
+    0x81,//对比度设置
+    0xEF,//1~255;默认0X7F (亮度设置,越大越亮)
+    0xD9,//设置预充电周期
+    0xf1,//[3:0],PHASE 1;[7:4],PHASE 2;
+    0xDB,//设置VCOMH 电压倍率
+    0x30,//[6:4] 000,0.65*vcc;001,0.77*vcc;011,0.83*vcc;
+    0xA4,//全局显示开启;bit0:1,开启;0,关闭;(白屏/黑屏)
+    0xA6,//设置显示方式;bit0:1,反相显示;0,正常显示
+    0xAF,//开启显示
 };
 
 const unsigned char picture_tab[]={
@@ -117,49 +104,39 @@ const unsigned char picture_tab[]={
 };
 
 
-/**************************IIC模块发送函数************************************************
+/**************************IIC模块发送函数**********************************
 
  *************************************************************************/
 //写入  最后将SDA拉高，以等待从设备产生应答
 void IIC_write(unsigned char date)
 {
-  unsigned char i, temp;
-  temp = date;
-
-  for(i=0; i<8; i++)
-  { digitalWrite(3,LOW);
-
-                if ((temp&0x80)==0)
-                  digitalWrite(4,LOW);
-                else digitalWrite(4,HIGH);
-    temp = temp << 1;
-              //最少250ns延时
+    unsigned char i, temp;
+    temp = date;
+    for(i=0; i<8; i++)
+    {
+        digitalWrite(3,LOW);
+        if ((temp&0x80)==0)
+            digitalWrite(4,LOW);
+        else digitalWrite(4,HIGH);
+        temp = temp << 1; //最少250ns延时
+        digitalWrite(3,HIGH);
+    }
+    digitalWrite(3,LOW);
+    digitalWrite(4,HIGH);
     digitalWrite(3,HIGH);
-
-  }
-  digitalWrite(3,LOW);
-
-  digitalWrite(4,HIGH);
-
-  digitalWrite(3,HIGH);
-  //不进行应答检测
-  digitalWrite(3,LOW);
-
-
+    //不进行应答检测
+    digitalWrite(3,LOW);
 }
+
 //启动信号
 //SCL在高电平期间，SDA由高电平向低电平的变化定义为启动信号
 void IIC_start()
 {
-  digitalWrite(4,HIGH);
-
-  digitalWrite(3,HIGH);
-             //所有操作结束释放SCL
-  digitalWrite(4,LOW);
-
-  digitalWrite(3,LOW);
-
-        IIC_write(0x78);
+    digitalWrite(4,HIGH);
+    digitalWrite(3,HIGH);//所有操作结束释放SCL
+    digitalWrite(4,LOW);
+    digitalWrite(3,LOW);
+    IIC_write(0x78);
 
 }
 
@@ -185,12 +162,13 @@ void OLED_send_cmd(unsigned char o_command)
 
   }
 void OLED_send_data(unsigned char o_data)
-  {
+{
     IIC_start();
     IIC_write(0x40);
     IIC_write(o_data);
     IIC_stop();
-   }
+}
+
 void Column_set(unsigned char column)
   {
     OLED_send_cmd(0x10|(column>>4));    //设置列地址高位
@@ -215,18 +193,18 @@ void OLED_clear(void)
       }
   }
 void OLED_full(void)
-  {
+{
     unsigned char page,column;
     for(page=0;page<OLED_PAGE_NUMBER;page++)             //page loop
-      {
+    {
         Page_set(page);
         Column_set(0);
-  for(column=0;column<OLED_COLUMN_NUMBER;column++)  //column loop
-          {
-            OLED_send_data(0xff);
-          }
-      }
-  }
+        for(column=0;column<OLED_COLUMN_NUMBER;column++)  //column loop
+        {
+        OLED_send_data(0xff);
+        }
+    }
+}
 void OLED_init(void)
   {
     unsigned char i;
@@ -268,29 +246,29 @@ void Picture_ReverseDisplay(const unsigned char *ptr_pic)
 
 void  IO_init(void )
 {
-  pinMode(3,OUTPUT);//设置数字脚为输出
-  pinMode(4,OUTPUT);//设置数字脚为输出
-  pinMode(5,OUTPUT);//设置数字脚为输出
-  pinMode(6,OUTPUT);//设置数字脚为输出
-  pinMode(7,OUTPUT);//设置数字脚为输出
+    pinMode(3,OUTPUT);//设置数字脚为输出
+    pinMode(4,OUTPUT);//设置数字脚为输出
+//   pinMode(5,OUTPUT);//设置数字脚为输出
+//   pinMode(6,OUTPUT);//设置数字脚为输出
+//   pinMode(7,OUTPUT);//设置数字脚为输出
 
 
 }
 
 
-void  setup(){
-point= &picture_tab[0];
-  IO_init();
-
-  OLED_init();
-  OLED_full();
-  delay(3000);
-  OLED_clear();
-
+void setup()
+{
+    point= &picture_tab[0];
+    IO_init();
+    OLED_init();
+    OLED_full();
+    delay(3000);
+    OLED_clear();
 }
 
-void  loop(){
-point= &picture_tab[0];
+void  loop()
+{
+    point= &picture_tab[0];
     Picture_display(point);
     delay(3000);
     point= &picture_tab[128*32/8];
