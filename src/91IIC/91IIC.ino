@@ -8,7 +8,7 @@ const unsigned char *point;
 
 const unsigned char OLED_init_cmd[25]=
 {
-0xAE,//关闭显示
+    0xAE,//关闭显示
 
        0xD5,//设置时钟分频因子,震荡频率
        0x80,  //[3:0],分频因子;[7:4],震荡频率
@@ -49,10 +49,6 @@ const unsigned char OLED_init_cmd[25]=
 };
 
 const unsigned char picture_tab[]={
-/*------------------------------------------------------------------------------
-;源文件/文字:C:\DocumentsandSettings\Administrator\桌面\新建文件夹(2)\logo.bmp字模
-;宽×高(像素):128×64
-------------------------------------------------------------------------------*/
 //0x80,0x40,0x10,//宽的像素数,高的像素数,宽的字节数,参数设置可选
 0xFF,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
 0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
@@ -119,7 +115,6 @@ const unsigned char picture_tab[]={
 0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,
 0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x80,0xFF
 };
-
 
 
 /**************************IIC模块发送函数************************************************
@@ -273,11 +268,11 @@ void Picture_ReverseDisplay(const unsigned char *ptr_pic)
 
 void  IO_init(void )
 {
-pinMode(3,OUTPUT);//设置数字脚为输出
-pinMode(4,OUTPUT);//设置数字脚为输出
-pinMode(5,OUTPUT);//设置数字脚为输出
-pinMode(6,OUTPUT);//设置数字脚为输出
-pinMode(7,OUTPUT);//设置数字脚为输出
+  pinMode(3,OUTPUT);//设置数字脚为输出
+  pinMode(4,OUTPUT);//设置数字脚为输出
+  pinMode(5,OUTPUT);//设置数字脚为输出
+  pinMode(6,OUTPUT);//设置数字脚为输出
+  pinMode(7,OUTPUT);//设置数字脚为输出
 
 
 }
